@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDI Sync Manager - InfoBlox Integration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Marriott-style header */
+        header {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-top {
+            background-color: #000;
+            padding: 8px 0;
+            font-size: 12px;
+        }
+
+        .header-main {
+            padding: 20px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: #2d2d2d;
+            padding: 0;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav li {
+            position: relative;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: block;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: #d4a574;
+        }
+
+        /* Main content */
+        main {
+            padding: 40px 0;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        h1, h2 {
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 300;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 400;
+            border-bottom: 2px solid #d4a574;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        /* Buttons - Marriott style */
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background-color: #d4a574;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #b8935f;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 165, 116, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-connected {
+            background-color: #28a745;
+        }
+
+        .status-disconnected {
+            background-color: #dc3545;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #d4a574;
+        }
+
+        /* Upload area */
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            transition: border-color 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #d4a574;
+        }
+
+        .upload-area.dragover {
+            background-color: #f8f9fa;
+            border-color: #d4a574;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #d4a574;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .tab:hover {
+            color: #d4a574;
+        }
+
+        .tab.active {
+            color: #d4a574;
+            border-bottom: 2px solid #d4a574;
+            margin-bottom: -2px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Progress bar */
+        .progress {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #d4a574;
+            transition: width 0.3s ease;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            font-size: 12px;
+        }
+
+        /* Attribute mapping */
+        .mapping-container {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .mapping-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .mapping-source {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .mapping-arrow {
+            color: #666;
+            font-size: 20px;
+        }
+
+        .mapping-target {
+            flex: 2;
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .confidence-high {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .confidence-medium {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .confidence-low {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-close {
+            font-size: 28px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        /* Comparison results */
+        .comparison-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 300;
+            color: #333;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Import steps */
+        .import-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background-color: #e0e0e0;
+            z-index: -1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .step.active .step-circle {
+            background-color: #d4a574;
+            color: white;
+        }
+
+        .step.completed .step-circle {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .step.active .step-label {
+            color: #333;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="container">
+                <span>DDI Sync Management System - InfoBlox v2.13.1</span>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <div class="logo">INFOBLOX DDI SYNC</div>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#" class="active" onclick="showTab('dashboard')">Dashboard</a></li>
+                <li><a href="#" onclick="showTab('aws-import')">AWS Import</a></li>
+                <li><a href="#" onclick="showTab('settings')">Settings</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <div class="section">
+                    <h1>InfoBlox DDI Dashboard</h1>
+                    <p>Manage and synchronize your DNS, DHCP, and IP address data between AWS and InfoBlox.</p>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3><span class="status-indicator" id="infoblox-status"></span>InfoBlox</h3>
+                            <p id="infoblox-status-text">Status: Not Connected</p>
+                            <p id="infoblox-info"></p>
+                            <button class="btn btn-primary" onclick="showTab('settings')">Configure</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>Network Views</h3>
+                            <p id="network-views-count">Not loaded</p>
+                            <button class="btn btn-secondary" onclick="loadNetworkViews()">Refresh</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>Extended Attributes</h3>
+                            <p id="ext-attrs-count">Not loaded</p>
+                            <button class="btn btn-secondary" onclick="loadExtensibleAttributes()">Refresh</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AWS Import Tab -->
+            <div id="aws-import-tab" class="tab-content">
+                <div class="section">
+                    <h1>AWS Network Import</h1>
+                    
+                    <div class="import-steps">
+                        <div class="step active" id="step-upload">
+                            <div class="step-circle">1</div>
+                            <div class="step-label">Upload File</div>
+                        </div>
+                        <div class="step" id="step-mapping">
+                            <div class="step-circle">2</div>
+                            <div class="step-label">Map Attributes</div>
+                        </div>
+                        <div class="step" id="step-review">
+                            <div class="step-circle">3</div>
+                            <div class="step-label">Review & Dry Run</div>
+                        </div>
+                        <div class="step" id="step-import">
+                            <div class="step-circle">4</div>
+                            <div class="step-label">Import</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Upload -->
+                    <div id="upload-step" class="step-content">
+                        <h2>Upload AWS Network Export</h2>
+                        <p>Upload your AWS network export file (CSV or Excel format). The file should contain columns: subnet, account, region, and TAG.</p>
+                        
+                        <div class="upload-area" id="aws-upload-area" ondrop="handleAWSDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                            <p>Drag and drop your AWS export file here</p>
+                            <p>or</p>
+                            <input type="file" id="aws-file-input" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleAWSFileSelect(event)">
+                            <button class="btn btn-primary" onclick="document.getElementById('aws-file-input').click()">Choose File</button>
+                        </div>
+                        
+                        <div id="upload-results"></div>
+                    </div>
+
+                    <!-- Step 2: Attribute Mapping -->
+                    <div id="mapping-step" class="step-content" style="display: none;">
+                        <h2>Map AWS Tags to InfoBlox Extended Attributes</h2>
+                        <p>Map AWS tags to existing InfoBlox extended attributes or create new ones.</p>
+                        
+                        <div class="form-group">
+                            <label for="network-view-select">Network View:</label>
+                            <select id="network-view-select">
+                                <option value="default">default</option>
+                            </select>
+                        </div>
+                        
+                        <div id="attribute-mappings"></div>
+                        
+                        <button class="btn btn-primary" onclick="proceedToReview()">Continue to Review</button>
+                        <button class="btn btn-secondary" onclick="goToStep('upload')">Back</button>
+                    </div>
+
+                    <!-- Step 3: Review & Dry Run -->
+                    <div id="review-step" class="step-content" style="display: none;">
+                        <h2>Review Import</h2>
+                        
+                        <div class="comparison-stats" id="dry-run-stats"></div>
+                        
+                        <div id="dry-run-results"></div>
+                        
+                        <button class="btn btn-primary" onclick="performDryRun()">Run Comparison</button>
+                        <button class="btn btn-success" onclick="proceedToImport()" style="display: none;" id="proceed-import-btn">Proceed to Import</button>
+                        <button class="btn btn-secondary" onclick="goToStep('mapping')">Back</button>
+                    </div>
+
+                    <!-- Step 4: Import -->
+                    <div id="import-step" class="step-content" style="display: none;">
+                        <h2>Import Networks to InfoBlox</h2>
+                        
+                        <div id="import-summary"></div>
+                        
+                        <div class="progress" id="import-progress" style="display: none;">
+                            <div class="progress-bar" id="import-progress-bar">0%</div>
+                        </div>
+                        
+                        <div id="import-results"></div>
+                        
+                        <button class="btn btn-success" onclick="performImport()" id="start-import-btn">Start Import</button>
+                        <button class="btn btn-secondary" onclick="goToStep('review')">Back</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="section">
+                    <h1>Settings</h1>
+                    <h2>InfoBlox Configuration</h2>
+                    <form id="infoblox-settings">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="infoblox-url">InfoBlox URL:</label>
+                                <input type="text" id="infoblox-url" placeholder="https://infoblox.example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="infoblox-user">Username:</label>
+                                <input type="text" id="infoblox-user" placeholder="admin" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="infoblox-pass">Password:</label>
+                                <input type="password" id="infoblox-pass" placeholder="********" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Test & Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Attribute Modal -->
+    <div id="create-attr-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Extended Attribute</h3>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="create-attr-form">
+                <div class="form-group">
+                    <label for="new-attr-name">Attribute Name:</label>
+                    <input type="text" id="new-attr-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-attr-type">Type:</label>
+                    <select id="new-attr-type">
+                        <option value="STRING">String</option>
+                        <option value="INTEGER">Integer</option>
+                        <option value="EMAIL">Email</option>
+                        <option value="URL">URL</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-attr-comment">Comment:</label>
+                    <input type="text" id="new-attr-comment" placeholder="Optional description">
+                </div>
+                <button type="submit" class="btn btn-primary">Create Attribute</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let awsData = null;
+        let attributeMappings = {};
+        let dryRunData = null;
+        let infobloxConnected = false;
+        let networkViews = [];
+        let extensibleAttributes = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkInfobloxConnection();
+        });
+
+        // Tab switching
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Step navigation
+        function goToStep(stepName) {
+            // Hide all step contents
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Show selected step content
+            document.getElementById(stepName + '-step').style.display = 'block';
+            
+            // Update step indicators
+            const steps = ['upload', 'mapping', 'review', 'import'];
+            const currentIndex = steps.indexOf(stepName);
+            
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < currentIndex) {
+                    step.classList.add('completed');
+                } else if (index === currentIndex) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+        // InfoBlox connection check
+        function checkInfobloxConnection() {
+            fetch('/api/infoblox/network-views')
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Not connected');
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        infobloxConnected = true;
+                        document.getElementById('infoblox-status').className = 'status-indicator status-connected';
+                        document.getElementById('infoblox-status-text').textContent = 'Status: Connected';
+                        loadNetworkViews();
+                        loadExtensibleAttributes();
+                    }
+                })
+                .catch(error => {
+                    infobloxConnected = false;
+                    document.getElementById('infoblox-status').className = 'status-indicator status-disconnected';
+                    document.getElementById('infoblox-status-text').textContent = 'Status: Not Connected';
+                });
+        }
+
+        // Load network views
+        function loadNetworkViews() {
+            fetch('/api/infoblox/network-views')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        networkViews = data.data;
+                        document.getElementById('network-views-count').textContent = `${networkViews.length} views`;
+                        
+                        // Update select dropdown
+                        const select = document.getElementById('network-view-select');
+                        select.innerHTML = '';
+                        networkViews.forEach(view => {
+                            const option = document.createElement('option');
+                            option.value = view.name;
+                            option.textContent = view.name;
+                            select.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    showAlert('Error loading network views', 'error');
+                });
+        }
+
+        // Load extensible attributes
+        function loadExtensibleAttributes() {
+            fetch('/api/infoblox/extensible-attributes')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        extensibleAttributes = data.data;
+                        document.getElementById('ext-attrs-count').textContent = `${extensibleAttributes.length} attributes`;
+                    }
+                })
+                .catch(error => {
+                    showAlert('Error loading extensible attributes', 'error');
+                });
+        }
+
+        // File upload handling
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleAWSDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('aws-upload-area').classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                uploadAWSFile(files[0]);
+            }
+        }
+
+        function handleAWSFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                uploadAWSFile(files[0]);
+            }
+        }
+
+        function uploadAWSFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            document.getElementById('upload-results').innerHTML = '<div class="spinner"></div>';
+            
+            fetch('/api/aws/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    awsData = data.data;
+                    displayUploadResults(data.data);
+                } else {
+                    showAlert('Error: ' + data.message + (data.errors ? '\n' + data.errors.join('\n') : ''), 'error');
+                    document.getElementById('upload-results').innerHTML = '';
+                }
+            })
+            .catch(error => {
+                showAlert('Error uploading file: ' + error, 'error');
+                document.getElementById('upload-results').innerHTML = '';
+            });
+        }
+
+        function displayUploadResults(data) {
+            let html = '<div class="alert alert-success">File uploaded successfully!</div>';
+            html += `<h3>Summary</h3>`;
+            html += `<p>Total networks: ${data.total_count}</p>`;
+            html += `<p>Unique tags found: ${data.unique_tags.length}</p>`;
+            
+            if (data.unique_tags.length > 0) {
+                html += '<h4>Tags:</h4>';
+                html += '<ul>';
+                data.unique_tags.forEach(tag => {
+                    html += `<li>${tag}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            html += '<button class="btn btn-primary" onclick="proceedToMapping()">Continue to Attribute Mapping</button>';
+            
+            document.getElementById('upload-results').innerHTML = html;
+        }
+
+        function proceedToMapping() {
+            if (!awsData || !awsData.unique_tags) {
+                showAlert('Please upload a file first', 'error');
+                return;
+            }
+            
+            goToStep('mapping');
+            loadAttributeMappings();
+        }
+
+        function loadAttributeMappings() {
+            document.getElementById('attribute-mappings').innerHTML = '<div class="spinner"></div>';
+            
+            fetch('/api/aws/attribute-mappings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tags: awsData.unique_tags })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displayAttributeMappings(data.data);
+                } else {
+                    showAlert('Error loading attribute mappings', 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error loading attribute mappings: ' + error, 'error');
+            });
+        }
+
+        function displayAttributeMappings(mappings) {
+            let html = '<div class="mapping-container">';
+            
+            Object.entries(mappings).forEach(([awsTag, mapping]) => {
+                html += `<div class="mapping-row">`;
+                html += `<div class="mapping-source">${awsTag}</div>`;
+                html += `<div class="mapping-arrow">’</div>`;
+                html += `<div class="mapping-target">`;
+                html += `<select id="mapping-${awsTag}" onchange="updateMapping('${awsTag}', this.value)">`;
+                html += `<option value="">-- Skip this attribute --</option>`;
+                
+                // Add suggestions
+                mapping.suggestions.forEach(suggestion => {
+                    const confidence = suggestion.confidence >= 80 ? 'high' : 
+                                     suggestion.confidence >= 50 ? 'medium' : 'low';
+                    html += `<option value="${suggestion.infoblox_attribute}">`;
+                    html += `${suggestion.infoblox_attribute}`;
+                    html += ` (${suggestion.confidence}% match)`;
+                    html += `</option>`;
+                });
+                
+                // Add all other attributes
+                html += `<optgroup label="All Attributes">`;
+                extensibleAttributes.forEach(attr => {
+                    if (!mapping.suggestions.some(s => s.infoblox_attribute === attr.name)) {
+                        html += `<option value="${attr.name}">${attr.name}</option>`;
+                    }
+                });
+                html += `</optgroup>`;
+                
+                html += `<option value="__create_new__">+ Create new attribute</option>`;
+                html += `</select>`;
+                
+                // Auto-select high confidence matches
+                if (mapping.suggestions.length > 0 && mapping.suggestions[0].confidence >= 80) {
+                    attributeMappings[awsTag] = mapping.suggestions[0].infoblox_attribute;
+                }
+                
+                html += `</div>`;
+                html += `</div>`;
+            });
+            
+            html += '</div>';
+            document.getElementById('attribute-mappings').innerHTML = html;
+            
+            // Set pre-selected values
+            Object.entries(attributeMappings).forEach(([tag, attr]) => {
+                const select = document.getElementById(`mapping-${tag}`);
+                if (select) select.value = attr;
+            });
+        }
+
+        function updateMapping(awsTag, value) {
+            if (value === '__create_new__') {
+                document.getElementById('new-attr-name').value = awsTag;
+                document.getElementById('create-attr-modal').style.display = 'block';
+                document.getElementById('create-attr-form').onsubmit = function(e) {
+                    e.preventDefault();
+                    createNewAttribute(awsTag);
+                };
+            } else if (value) {
+                attributeMappings[awsTag] = value;
+            } else {
+                delete attributeMappings[awsTag];
+            }
+        }
+
+        function createNewAttribute(forTag) {
+            const name = document.getElementById('new-attr-name').value;
+            const type = document.getElementById('new-attr-type').value;
+            const comment = document.getElementById('new-attr-comment').value;
+            
+            fetch('/api/infoblox/create-attribute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, type, comment })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert(data.message, 'success');
+                    closeModal();
+                    
+                    // Add to local list and update mapping
+                    extensibleAttributes.push({ name, type });
+                    attributeMappings[forTag] = name;
+                    
+                    // Refresh the mappings display
+                    loadAttributeMappings();
+                } else {
+                    showAlert('Error creating attribute: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error creating attribute: ' + error, 'error');
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('create-attr-modal').style.display = 'none';
+        }
+
+        function proceedToReview() {
+            goToStep('review');
+            document.getElementById('dry-run-stats').innerHTML = '';
+            document.getElementById('dry-run-results').innerHTML = '';
+            document.getElementById('proceed-import-btn').style.display = 'none';
+        }
+
+        function performDryRun() {
+            const networkView = document.getElementById('network-view-select').value;
+            
+            document.getElementById('dry-run-results').innerHTML = '<div class="spinner"></div>';
+            
+            fetch('/api/aws/dry-run', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    networks: awsData.networks,
+                    network_view: networkView
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    dryRunData = data.data;
+                    displayDryRunResults(data.data);
+                } else {
+                    showAlert('Error performing dry run: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error performing dry run: ' + error, 'error');
+            });
+        }
+
+        function displayDryRunResults(results) {
+            // Display stats
+            let statsHtml = '';
+            statsHtml += `<div class="stat-card">`;
+            statsHtml += `<div class="stat-number">${results.new.length}</div>`;
+            statsHtml += `<div class="stat-label">New Networks</div>`;
+            statsHtml += `</div>`;
+            
+            statsHtml += `<div class="stat-card">`;
+            statsHtml += `<div class="stat-number">${results.existing.length}</div>`;
+            statsHtml += `<div class="stat-label">Existing Networks</div>`;
+            statsHtml += `</div>`;
+            
+            statsHtml += `<div class="stat-card">`;
+            statsHtml += `<div class="stat-number">${results.conflicts.length}</div>`;
+            statsHtml += `<div class="stat-label">Conflicts</div>`;
+            statsHtml += `</div>`;
+            
+            document.getElementById('dry-run-stats').innerHTML = statsHtml;
+            
+            // Display details
+            let html = '';
+            
+            if (results.new.length > 0) {
+                html += '<h3>New Networks to Create</h3>';
+                html += '<table><thead><tr><th>Subnet</th><th>Account</th><th>Region</th><th>Tags</th></tr></thead><tbody>';
+                results.new.forEach(net => {
+                    html += '<tr>';
+                    html += `<td>${net.subnet}</td>`;
+                    html += `<td>${net.account}</td>`;
+                    html += `<td>${net.region}</td>`;
+                    html += `<td>${Object.keys(net.tags).length} tags</td>`;
+                    html += '</tr>';
+                });
+                html += '</tbody></table>';
+            }
+            
+            if (results.conflicts.length > 0) {
+                html += '<h3>Conflicts to Resolve</h3>';
+                html += '<div class="alert alert-warning">The following networks have conflicting attributes that will be updated:</div>';
+                html += '<table><thead><tr><th>Subnet</th><th>Attribute</th><th>AWS Value</th><th>InfoBlox Value</th></tr></thead><tbody>';
+                results.conflicts.forEach(net => {
+                    net.conflicts.forEach(conflict => {
+                        html += '<tr>';
+                        html += `<td>${net.subnet}</td>`;
+                        html += `<td>${conflict.attribute}</td>`;
+                        html += `<td>${conflict.aws_value}</td>`;
+                        html += `<td>${conflict.infoblox_value}</td>`;
+                        html += '</tr>';
+                    });
+                });
+                html += '</tbody></table>';
+            }
+            
+            document.getElementById('dry-run-results').innerHTML = html;
+            document.getElementById('proceed-import-btn').style.display = 'inline-block';
+        }
+
+        function proceedToImport() {
+            goToStep('import');
+            displayImportSummary();
+        }
+
+        function displayImportSummary() {
+            let html = '<h3>Import Summary</h3>';
+            html += `<p>Network View: ${document.getElementById('network-view-select').value}</p>`;
+            html += `<p>Networks to create: ${dryRunData.new.length}</p>`;
+            html += `<p>Networks to update: ${dryRunData.existing.length + dryRunData.conflicts.length}</p>`;
+            html += '<p>Attribute mappings: ' + Object.keys(attributeMappings).length + ' configured</p>';
+            
+            document.getElementById('import-summary').innerHTML = html;
+        }
+
+        function performImport() {
+            const networkView = document.getElementById('network-view-select').value;
+            
+            document.getElementById('start-import-btn').disabled = true;
+            document.getElementById('import-progress').style.display = 'block';
+            document.getElementById('import-results').innerHTML = '';
+            
+            // Combine all networks to import
+            const networksToImport = [
+                ...dryRunData.new,
+                ...dryRunData.existing,
+                ...dryRunData.conflicts
+            ];
+            
+            fetch('/api/aws/import', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    networks: networksToImport,
+                    network_view: networkView,
+                    attribute_mappings: attributeMappings
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displayImportResults(data.data);
+                } else {
+                    showAlert('Error during import: ' + data.message, 'error');
+                }
+                document.getElementById('start-import-btn').disabled = false;
+                document.getElementById('import-progress').style.display = 'none';
+            })
+            .catch(error => {
+                showAlert('Error during import: ' + error, 'error');
+                document.getElementById('start-import-btn').disabled = false;
+                document.getElementById('import-progress').style.display = 'none';
+            });
+        }
+
+        function displayImportResults(results) {
+            let html = '<h3>Import Complete!</h3>';
+            
+            if (results.created > 0) {
+                html += `<div class="alert alert-success">Successfully created ${results.created} networks</div>`;
+            }
+            
+            if (results.updated > 0) {
+                html += `<div class="alert alert-success">Successfully updated ${results.updated} networks</div>`;
+            }
+            
+            if (results.failed > 0) {
+                html += `<div class="alert alert-error">Failed to process ${results.failed} networks</div>`;
+                if (results.errors.length > 0) {
+                    html += '<h4>Errors:</h4><ul>';
+                    results.errors.forEach(error => {
+                        html += `<li>${error}</li>`;
+                    });
+                    html += '</ul>';
+                }
+            }
+            
+            html += '<button class="btn btn-primary" onclick="resetImport()">Import Another File</button>';
+            
+            document.getElementById('import-results').innerHTML = html;
+        }
+
+        function resetImport() {
+            awsData = null;
+            attributeMappings = {};
+            dryRunData = null;
+            
+            document.getElementById('aws-file-input').value = '';
+            document.getElementById('upload-results').innerHTML = '';
+            
+            goToStep('upload');
+        }
+
+        // InfoBlox settings
+        document.getElementById('infoblox-settings').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const settings = {
+                host: document.getElementById('infoblox-url').value,
+                username: document.getElementById('infoblox-user').value,
+                password: document.getElementById('infoblox-pass').value
+            };
+            
+            fetch('/api/infoblox/configure', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert(data.message, 'success');
+                    checkInfobloxConnection();
+                } else {
+                    showAlert('Error: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error configuring InfoBlox: ' + error, 'error');
+            });
+        });
+
+        // Alert function
+        function showAlert(message, type) {
+            const alertClass = type === 'error' ? 'alert-error' : 
+                             type === 'warning' ? 'alert-warning' :
+                             type === 'info' ? 'alert-info' : 'alert-success';
+            const alert = document.createElement('div');
+            alert.className = `alert ${alertClass}`;
+            alert.textContent = message;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alert, container.firstChild);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Modal close on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('create-attr-modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

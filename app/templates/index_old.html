@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDI Sync Manager - InfoBlox Integration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Marriott-style header */
+        header {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-top {
+            background-color: #000;
+            padding: 8px 0;
+            font-size: 12px;
+        }
+
+        .header-main {
+            padding: 20px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: #2d2d2d;
+            padding: 0;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav li {
+            position: relative;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: block;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: #d4a574;
+        }
+
+        /* Main content */
+        main {
+            padding: 40px 0;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        h1, h2 {
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 300;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 400;
+            border-bottom: 2px solid #d4a574;
+            padding-bottom: 10px;
+        }
+
+        /* Buttons - Marriott style */
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #d4a574;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #b8935f;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 165, 116, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-connected {
+            background-color: #28a745;
+        }
+
+        .status-disconnected {
+            background-color: #dc3545;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #d4a574;
+        }
+
+        /* Upload area */
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            transition: border-color 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #d4a574;
+        }
+
+        .upload-area.dragover {
+            background-color: #f8f9fa;
+            border-color: #d4a574;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #d4a574;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .tab:hover {
+            color: #d4a574;
+        }
+
+        .tab.active {
+            color: #d4a574;
+            border-bottom: 2px solid #d4a574;
+            margin-bottom: -2px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="container">
+                <span>DDI Sync Management System</span>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <div class="logo">INFOBLOX DDI SYNC</div>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#" class="active" onclick="showTab('dashboard')">Dashboard</a></li>
+                <li><a href="#" onclick="showTab('sources')">Data Sources</a></li>
+                <li><a href="#" onclick="showTab('compare')">Compare</a></li>
+                <li><a href="#" onclick="showTab('sync')">Sync</a></li>
+                <li><a href="#" onclick="showTab('settings')">Settings</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <div class="section">
+                    <h1>DDI Sync Dashboard</h1>
+                    <p>Manage and synchronize your DNS, DHCP, and IP address data across InfoBlox and cloud providers.</p>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3><span class="status-indicator status-disconnected"></span>InfoBlox</h3>
+                            <p>Status: Not Connected</p>
+                            <button class="btn btn-primary" onclick="connectInfoblox()">Connect</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3><span class="status-indicator status-disconnected"></span>AWS</h3>
+                            <p>Status: Not Configured</p>
+                            <button class="btn btn-primary" onclick="configureProvider('aws')">Configure</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3><span class="status-indicator status-disconnected"></span>Azure</h3>
+                            <p>Status: Not Configured</p>
+                            <button class="btn btn-primary" onclick="configureProvider('azure')">Configure</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3><span class="status-indicator status-disconnected"></span>GCP</h3>
+                            <p>Status: Not Configured</p>
+                            <button class="btn btn-primary" onclick="configureProvider('gcp')">Configure</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3><span class="status-indicator status-disconnected"></span>Alibaba Cloud</h3>
+                            <p>Status: Not Configured</p>
+                            <button class="btn btn-primary" onclick="configureProvider('alibaba')">Configure</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Sources Tab -->
+            <div id="sources-tab" class="tab-content">
+                <div class="section">
+                    <h1>Data Sources</h1>
+                    
+                    <div class="tabs">
+                        <button class="tab active" onclick="showSourceTab('cloud')">Cloud Providers</button>
+                        <button class="tab" onclick="showSourceTab('file')">File Upload</button>
+                    </div>
+                    
+                    <div id="cloud-source" class="source-content active">
+                        <h2>Cloud Provider Data</h2>
+                        <div class="form-group">
+                            <label for="provider-select">Select Provider:</label>
+                            <select id="provider-select" onchange="loadProviderData()">
+                                <option value="">Select a provider</option>
+                                <option value="aws">AWS</option>
+                                <option value="azure">Azure</option>
+                                <option value="gcp">Google Cloud</option>
+                                <option value="alibaba">Alibaba Cloud</option>
+                            </select>
+                        </div>
+                        <div id="provider-data"></div>
+                    </div>
+                    
+                    <div id="file-source" class="source-content" style="display: none;">
+                        <h2>Upload CSV/Excel File</h2>
+                        <div class="upload-area" id="upload-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                            <p>Drag and drop your CSV or Excel file here</p>
+                            <p>or</p>
+                            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleFileSelect(event)">
+                            <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">Choose File</button>
+                        </div>
+                        <div id="file-data"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compare Tab -->
+            <div id="compare-tab" class="tab-content">
+                <div class="section">
+                    <h1>Compare Data Sources</h1>
+                    <p>Compare DDI data across different sources to identify conflicts and missing entries.</p>
+                    
+                    <button class="btn btn-primary" onclick="compareData()">Run Comparison</button>
+                    
+                    <div id="comparison-results" style="margin-top: 30px;"></div>
+                </div>
+            </div>
+
+            <!-- Sync Tab -->
+            <div id="sync-tab" class="tab-content">
+                <div class="section">
+                    <h1>Synchronize Data</h1>
+                    <p>Sync DDI data between InfoBlox and your selected sources.</p>
+                    
+                    <div class="form-group">
+                        <label for="sync-source">Source:</label>
+                        <select id="sync-source">
+                            <option value="">Select source</option>
+                            <option value="infoblox">InfoBlox</option>
+                            <option value="aws">AWS</option>
+                            <option value="azure">Azure</option>
+                            <option value="gcp">GCP</option>
+                            <option value="alibaba">Alibaba</option>
+                            <option value="csv">Uploaded File</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sync-target">Target:</label>
+                        <select id="sync-target">
+                            <option value="">Select target</option>
+                            <option value="infoblox">InfoBlox</option>
+                            <option value="aws">AWS</option>
+                            <option value="azure">Azure</option>
+                            <option value="gcp">GCP</option>
+                            <option value="alibaba">Alibaba</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="syncData()">Start Sync</button>
+                    
+                    <div id="sync-results" style="margin-top: 30px;"></div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="section">
+                    <h1>Settings</h1>
+                    <h2>InfoBlox Configuration</h2>
+                    <form id="infoblox-settings">
+                        <div class="form-group">
+                            <label for="infoblox-url">InfoBlox URL:</label>
+                            <input type="text" id="infoblox-url" placeholder="https://infoblox.example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="infoblox-user">Username:</label>
+                            <input type="text" id="infoblox-user" placeholder="admin">
+                        </div>
+                        <div class="form-group">
+                            <label for="infoblox-pass">Password:</label>
+                            <input type="password" id="infoblox-pass" placeholder="********">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Global variables
+        let uploadedData = null;
+        let cloudData = {};
+
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Update nav active state
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Source tab switching
+        function showSourceTab(sourceName) {
+            // Update tab buttons
+            document.querySelectorAll('.tabs .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show/hide content
+            if (sourceName === 'cloud') {
+                document.getElementById('cloud-source').style.display = 'block';
+                document.getElementById('file-source').style.display = 'none';
+            } else {
+                document.getElementById('cloud-source').style.display = 'none';
+                document.getElementById('file-source').style.display = 'block';
+            }
+        }
+
+        // File upload handling
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('upload-area').classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('upload-area').classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('upload-area').classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                uploadFile(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                uploadFile(files[0]);
+            }
+        }
+
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Show loading
+            document.getElementById('file-data').innerHTML = '<div class="spinner"></div>';
+            
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    uploadedData = data.data;
+                    displayFileData(data.data);
+                } else {
+                    showAlert('Error uploading file: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error uploading file: ' + error, 'error');
+            });
+        }
+
+        function displayFileData(data) {
+            let html = '<h3>Uploaded Data Preview</h3>';
+            html += '<table><thead><tr>';
+            
+            // Get headers from first row
+            if (data.length > 0) {
+                Object.keys(data[0]).forEach(key => {
+                    html += `<th>${key}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+                
+                // Show first 10 rows
+                data.slice(0, 10).forEach(row => {
+                    html += '<tr>';
+                    Object.values(row).forEach(value => {
+                        html += `<td>${value}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                
+                html += '</tbody></table>';
+                
+                if (data.length > 10) {
+                    html += `<p>Showing 10 of ${data.length} rows</p>`;
+                }
+            }
+            
+            document.getElementById('file-data').innerHTML = html;
+        }
+
+        // Load provider data
+        function loadProviderData() {
+            const provider = document.getElementById('provider-select').value;
+            if (!provider) return;
+            
+            document.getElementById('provider-data').innerHTML = '<div class="spinner"></div>';
+            
+            fetch(`/api/cloud/${provider}/data`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        cloudData[provider] = data.data;
+                        displayProviderData(provider, data.data);
+                    } else {
+                        showAlert('Error loading provider data: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    showAlert('Error loading provider data: ' + error, 'error');
+                });
+        }
+
+        function displayProviderData(provider, data) {
+            let html = `<h3>${provider.toUpperCase()} Data</h3>`;
+            
+            if (data.error) {
+                html += `<div class="alert alert-error">${data.error}</div>`;
+            } else {
+                // Display VPCs/VNets
+                if (data.vpcs || data.vnets) {
+                    const items = data.vpcs || data.vnets;
+                    html += `<h4>Networks (${items.length})</h4>`;
+                    html += '<table><thead><tr><th>Name</th><th>CIDR</th></tr></thead><tbody>';
+                    items.forEach(item => {
+                        html += `<tr><td>${item.name || item.VpcId}</td><td>${item.CidrBlock || (item.address_space ? item.address_space.join(', ') : '')}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                }
+                
+                // Display Subnets
+                if (data.subnets) {
+                    html += `<h4>Subnets (${data.subnets.length})</h4>`;
+                    html += '<table><thead><tr><th>Name</th><th>CIDR</th></tr></thead><tbody>';
+                    data.subnets.slice(0, 10).forEach(subnet => {
+                        html += `<tr><td>${subnet.name || subnet.SubnetId}</td><td>${subnet.CidrBlock || subnet.address_prefix || subnet.cidr}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                    if (data.subnets.length > 10) {
+                        html += `<p>Showing 10 of ${data.subnets.length} subnets</p>`;
+                    }
+                }
+            }
+            
+            document.getElementById('provider-data').innerHTML = html;
+        }
+
+        // Compare data
+        function compareData() {
+            document.getElementById('comparison-results').innerHTML = '<div class="spinner"></div>';
+            
+            const sources = {
+                infoblox: {}, // Would be populated from InfoBlox API
+                aws: cloudData.aws || {},
+                azure: cloudData.azure || {},
+                gcp: cloudData.gcp || {},
+                alibaba: cloudData.alibaba || {},
+                csv: uploadedData || {}
+            };
+            
+            fetch('/api/compare', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(sources)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displayComparisonResults(data.data);
+                } else {
+                    showAlert('Error comparing data: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error comparing data: ' + error, 'error');
+            });
+        }
+
+        function displayComparisonResults(results) {
+            let html = '<h2>Comparison Results</h2>';
+            
+            // Missing in InfoBlox
+            if (results.missing_in_infoblox && results.missing_in_infoblox.length > 0) {
+                html += '<h3>Missing in InfoBlox</h3>';
+                html += '<table><thead><tr><th>Source</th><th>Type</th><th>Data</th></tr></thead><tbody>';
+                results.missing_in_infoblox.forEach(item => {
+                    html += `<tr><td>${item.source}</td><td>${item.type}</td><td>${JSON.stringify(item.data)}</td></tr>`;
+                });
+                html += '</tbody></table>';
+            }
+            
+            // Conflicts
+            if (results.conflicts && results.conflicts.length > 0) {
+                html += '<h3>Conflicts</h3>';
+                html += '<table><thead><tr><th>Type</th><th>InfoBlox</th><th>Cloud</th></tr></thead><tbody>';
+                results.conflicts.forEach(conflict => {
+                    html += `<tr><td>${conflict.type}</td><td>${JSON.stringify(conflict.infoblox)}</td><td>${JSON.stringify(conflict.cloud)}</td></tr>`;
+                });
+                html += '</tbody></table>';
+            }
+            
+            if ((!results.missing_in_infoblox || results.missing_in_infoblox.length === 0) && 
+                (!results.conflicts || results.conflicts.length === 0)) {
+                html += '<div class="alert alert-success">No conflicts or missing entries found!</div>';
+            }
+            
+            document.getElementById('comparison-results').innerHTML = html;
+        }
+
+        // Sync data
+        function syncData() {
+            const source = document.getElementById('sync-source').value;
+            const target = document.getElementById('sync-target').value;
+            
+            if (!source || !target) {
+                showAlert('Please select both source and target', 'error');
+                return;
+            }
+            
+            if (source === target) {
+                showAlert('Source and target must be different', 'error');
+                return;
+            }
+            
+            document.getElementById('sync-results').innerHTML = '<div class="spinner"></div>';
+            
+            const syncRequest = {
+                source: source,
+                target: target,
+                data: [] // Would be populated with selected items to sync
+            };
+            
+            fetch('/api/sync', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(syncRequest)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displaySyncResults(data.data);
+                } else {
+                    showAlert('Error syncing data: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error syncing data: ' + error, 'error');
+            });
+        }
+
+        function displaySyncResults(results) {
+            let html = '<h2>Sync Results</h2>';
+            html += `<p>Total items: ${results.total}</p>`;
+            html += `<p>Successfully synced: ${results.synced.length}</p>`;
+            html += `<p>Failed: ${results.failed.length}</p>`;
+            
+            if (results.failed.length > 0) {
+                html += '<h3>Failed Items</h3>';
+                html += '<table><thead><tr><th>Item</th><th>Error</th></tr></thead><tbody>';
+                results.failed.forEach(failure => {
+                    html += `<tr><td>${JSON.stringify(failure.item)}</td><td>${failure.error}</td></tr>`;
+                });
+                html += '</tbody></table>';
+            }
+            
+            document.getElementById('sync-results').innerHTML = html;
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+            const alert = document.createElement('div');
+            alert.className = `alert ${alertClass}`;
+            alert.textContent = message;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alert, container.firstChild);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Configure provider
+        function configureProvider(provider) {
+            showAlert(`Configuration for ${provider} would open here`, 'success');
+        }
+
+        // Connect InfoBlox
+        function connectInfoblox() {
+            showTab('settings');
+        }
+
+        // InfoBlox settings form
+        document.getElementById('infoblox-settings').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const settings = {
+                url: document.getElementById('infoblox-url').value,
+                username: document.getElementById('infoblox-user').value,
+                password: document.getElementById('infoblox-pass').value
+            };
+            
+            // In a real app, you would save these settings
+            showAlert('InfoBlox settings saved!', 'success');
+        });
+    </script>
+</body>
+</html>
